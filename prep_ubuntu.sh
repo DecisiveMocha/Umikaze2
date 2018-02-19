@@ -27,12 +27,19 @@ prep_ubuntu() {
 	# apt-get -y install ti-sgx-es8-modules-$KERNEL_VERSION
 	depmod $KERNEL_VERSION
 	update-initramfs -k $KERNEL_VERSION -u
-	
+
 	cd /usr/src/
 	git clone git://git.ti.com/wilink8-wlan/wl18xx_fw.git
 	cp /usr/src/wl18xx_fw/wl18xx-fw-4.bin /lib/firmware/ti-connectivity/wl18xx-fw-4.bin
 
 	apt-get -y upgrade
+
+	# first do some magic so iptables-persistent doesn't prompt
+	apt-get -y install debconf-utils
+	echo "iptables-persistent     iptables-persistent/autosave_v4 boolean true" | debconf-set-selections
+	echo "iptables-persistent     iptables-persistent/autosave_v6 boolean true" | debconf-set-selections
+
+	# now install it
 	apt-get -y -q --no-install-recommends --force-yes install unzip iptables iptables-persistent
 	systemctl enable netfilter-persistent
 	sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
