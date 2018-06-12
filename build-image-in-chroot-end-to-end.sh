@@ -2,7 +2,7 @@
 set -x
 set -e
 
-BASEIMAGE_URL=https://rcn-ee.com/rootfs/2018-02-09/microsd/bone-ubuntu-16.04.3-console-armhf-2018-02-09-2gb.img.xz
+BASEIMAGE_URL=https://rcn-ee.com/rootfs/2018-03-09/microsd/bone-ubuntu-16.04.4-console-armhf-2018-03-09-2gb.img.xz
 TARGETIMAGE=kamikaze-rootfs.img
 
 BASEIMAGE=`basename $BASEIMAGE_URL`
@@ -42,24 +42,26 @@ mount -o bind /dev ${MOUNTPOINT}/dev
 mount -o bind /sys ${MOUNTPOINT}/sys
 mount -o bind /proc ${MOUNTPOINT}/proc
 
-mkdir -p ${MOUNTPOINT}/run/resolvconf
-cp /etc/resolv.conf ${MOUNTPOINT}/run/resolvconf/resolv.conf
+rm ${MOUNTPOINT}/etc/resolv.conf
+cp /etc/resolv.conf ${MOUNTPOINT}/etc/resolv.conf
 
 # don't git clone here - if someone did a commit since this script started, Unexpected Things will happen
 # instead, do a deep copy so the image has a git repo as well
-mkdir -p ${MOUNTPOINT}/usr/src/Umikaze2
+mkdir -p ${MOUNTPOINT}/usr/src/Umikaze
 
 shopt -s dotglob # include hidden files/directories so we get .git
 shopt -s extglob # allow excluding so we can hide the img files
-cp -r `pwd`/!(*.img*) ${MOUNTPOINT}/usr/src/Umikaze2
+cp -r `pwd`/!(*.img*) ${MOUNTPOINT}/usr/src/Umikaze
 shopt -u extglob
 shopt -u dotglob
 
 set +e # allow this to fail - we'll check the return code
-chroot ${MOUNTPOINT} /bin/su -c "cd /usr/src/Umikaze2 && ./prep_ubuntu.sh && ./make-kamikaze-2.1.sh"
+chroot ${MOUNTPOINT} /bin/su -c "cd /usr/src/Umikaze && ./prep_ubuntu.sh && ./make-kamikaze.sh"
 
 status=$?
 set -e
+
+rm ${MOUNTPOINT}/etc/resolv.conf
 
 umount ${MOUNTPOINT}/proc
 umount ${MOUNTPOINT}/sys

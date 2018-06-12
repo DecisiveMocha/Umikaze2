@@ -124,9 +124,9 @@ install_dependencies(){
 
 	apt-get -y autoremove
 	apt-get -y purge linux-image-4.9.* linux-image-4.4.*
-	apt-mark hold linux-image-`uname -r`
+	#apt-mark hold linux-image-`uname -r`
 
-	easy_install --upgrade pip
+	#easy_install --upgrade pip
 	pip install numpy
 	pip install evdev spidev Adafruit_BBIO Adafruit-GPIO sympy docutils sh
 
@@ -138,7 +138,7 @@ install_dependencies(){
 	unzip master.zip
 	# install pasm PRU compiler
 	mkdir /usr/include/pruss
-	cd am335x_pru_package-master/
+	pushd am335x_pru_package-master/
 	cp pru_sw/app_loader/include/prussdrv.h /usr/include/pruss/
 	cp pru_sw/app_loader/include/pruss_intc_mapping.h /usr/include/pruss
 	chmod 555 /usr/include/pruss/*
@@ -150,6 +150,7 @@ install_dependencies(){
 	source linuxbuild
 	cp ../pasm /usr/bin/
 	chmod +x /usr/bin/pasm
+        popd
 
 	echo "GOVERNOR=\"performance\"" > /etc/default/cpufrequtils
 	systemctl stop ondemand
