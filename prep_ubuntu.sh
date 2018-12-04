@@ -51,7 +51,7 @@ upgrade_base_operating_system() {
   # now install it
   apt-get -y -q --no-install-recommends --force-yes install unzip iptables iptables-persistent
   systemctl enable netfilter-persistent
-  sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+  sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 }
 
 add_thing_printer_support_repository() {
