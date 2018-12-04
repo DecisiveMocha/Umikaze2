@@ -16,6 +16,7 @@ fi
 cd $REDEEM_HOME
 git pull
 git checkout $REDEEM_BRANCH
+pip install -r requirements.txt
 python2 setup.py develop
 
 # Make profiles uploadable via Octoprint
